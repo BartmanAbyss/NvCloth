@@ -6,9 +6,9 @@ project(NvCloth CXX)
 
 CMAKE_POLICY(SET CMP0057 NEW) # Enable IN_LIST
 
-SET(GW_DEPS_ROOT $ENV{GW_DEPS_ROOT})
+SET(GW_DEPS_ROOT c:/code/NvCloth)
 
-SET(CMAKE_MODULE_PATH $ENV{GW_DEPS_ROOT}/NvCloth/Externals/CMakeModules)
+SET(CMAKE_MODULE_PATH ${GW_DEPS_ROOT}/NvCloth/Externals/CMakeModules)
 
 MESSAGE( "[NvCloth]cmake/common CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
 

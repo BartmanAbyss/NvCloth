@@ -23,6 +23,7 @@ ResourceManager::ResourceManager()
 {
 	// search for root folder by default
 	addSearchDir(".");
+	addSearchDir(R"(c:\code\NvCloth\NvCloth\samples\resources\)");
 }
 
 const ShaderFileResource* ResourceManager::requestShaderFile(const char* name)

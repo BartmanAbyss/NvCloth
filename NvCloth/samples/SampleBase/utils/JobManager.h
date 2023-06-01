@@ -22,6 +22,7 @@
 #include <vector>
 #include <queue>
 #include <atomic>
+#include <functional>
 
 #include "task/PxTaskManager.h"
 #include "task/PxTask.h"

@@ -112,7 +112,7 @@ set(
 	# Important: to be able to debug CUDA kernel (correct stepping and workable warp watches),
 	# you should add the -G (short for --device-debug) option to the line below.
 	# Don't forget to remove it afterwards, since the code execution will be very slow with this flag.
-	-use_fast_math -ftz=true -prec-div=false -prec-sqrt=false -lineinfo -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_50,code=compute_50 -gencode arch=compute_60,code=sm_60 -D_USE_MATH_DEFINES -DNDEBUG -DPX_PROFILE=1
+	-use_fast_math -ftz=true -prec-div=false -prec-sqrt=false -lineinfo -gencode arch=compute_50,code=sm_50 -gencode arch=compute_50,code=compute_50 -gencode arch=compute_60,code=sm_60 -D_USE_MATH_DEFINES -DNDEBUG -DPX_PROFILE=1
 )
 SET(NVCLOTH_CUDA_FILES
 	${PROJECT_ROOT_DIR}/src/cuda/CuSolverKernel.cu
@@ -172,9 +172,9 @@ INCLUDE(../common/NvCloth.cmake)
 TARGET_LINK_LIBRARIES(NvCloth PUBLIC ${CUDA_CUDA_LIBRARY})
 
 SET_TARGET_PROPERTIES(NvCloth PROPERTIES 
-	LINK_FLAGS_DEBUG "/DELAYLOAD:nvcuda.dll /MAP  /DEBUG"
-	LINK_FLAGS_CHECKED "/DELAYLOAD:nvcuda.dll /MAP "
-	LINK_FLAGS_PROFILE "/DELAYLOAD:nvcuda.dll /MAP /INCREMENTAL:NO /DEBUG"
-	LINK_FLAGS_RELEASE "/DELAYLOAD:nvcuda.dll /MAP /INCREMENTAL:NO"
+	LINK_FLAGS_DEBUG   "/MAP  /DEBUG"
+	LINK_FLAGS_CHECKED "/MAP "
+	LINK_FLAGS_PROFILE "/MAP /INCREMENTAL:NO /DEBUG"
+	LINK_FLAGS_RELEASE "/MAP /INCREMENTAL:NO"
 )
 MESSAGE("[NvCloth]cmake/windows/NvCloth.cmake END")

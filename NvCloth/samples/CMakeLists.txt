@@ -4,6 +4,8 @@ project(NvClothSamples CXX)
 
 CMAKE_POLICY(SET CMP0057 NEW) # Enable IN_LIST
 
+SET(SAMPLES_ROOT_DIR "c:/code/nvcloth/nvcloth/samples")
+
 IF(NOT DEFINED SAMPLES_ROOT_DIR)
 	
 	STRING(REPLACE "\\" "/" BRD_TEMP $ENV{SAMPLES_ROOT_DIR})

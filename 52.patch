@@ -1,0 +1,97 @@
+From 583023fff41128a581b08e8d922a70257f40d44d Mon Sep 17 00:00:00 2001
+From: Kevin Gliewe <kevingliewe@outlook.de>
+Date: Thu, 20 Feb 2020 15:09:11 +0100
+Subject: [PATCH 1/2] Fix DX shader compiler error with SELF_COLLISION_SORT 0
+
+---
+ NvCloth/src/dx/DxSolverKernel.hlsl | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/NvCloth/src/dx/DxSolverKernel.hlsl b/NvCloth/src/dx/DxSolverKernel.hlsl
+index 9c02468..24d60b6 100644
+--- a/NvCloth/src/dx/DxSolverKernel.hlsl
++++ b/NvCloth/src/dx/DxSolverKernel.hlsl
+@@ -1399,6 +1399,9 @@ void selfCollideParticles(IParticles curParticles, uint32_t threadIdx)
+ 	const int32_t numIndices = gClothData.mNumSelfCollisionIndices;
+ 	const int32_t numParticles = gClothData.mNumParticles;
+ 
++	const int32_t cellStartOffset = gClothData.mSelfCollisionDataOffset + numIndices * 2;
++	const int32_t cellStartSize = (129 + 128 * 128 + 130);
++
+ #if USE_SELF_COLLISION_SORT
+ 	float expandedNegativeLower = 0;
+ 	float expandedEdgeLength = 0;
+@@ -1436,8 +1439,6 @@ void selfCollideParticles(IParticles curParticles, uint32_t threadIdx)
+ 	}
+ 	GroupMemoryBarrierWithGroupSync();
+ 
+-	const int32_t cellStartOffset = gClothData.mSelfCollisionDataOffset + numIndices * 2;
+-	const int32_t cellStartSize = (129 + 128 * 128 + 130);
+ 	if (gFrameData.mInitSelfCollisionData)
+ 	{
+ 		for (int32_t i = threadIdx; i < cellStartSize; i += BlockSize)
+@@ -1549,6 +1550,9 @@ void selfCollideParticles(IParticles curParticles, uint32_t threadIdx)
+ #endif
+ 	//GroupMemoryBarrierWithGroupSync();
+ 
++	const float cdist = gClothData.mSelfCollisionDistance;
++	const float cdistSq = cdist * cdist;
++
+ #if USE_SELF_COLLISION_SORT
+ 	// copy only sorted (indexed) particles to shared mem
+ 	for (i = threadIdx.x; i < numIndices; i += blockDim)
+@@ -1558,12 +1562,9 @@ void selfCollideParticles(IParticles curParticles, uint32_t threadIdx)
+ 	}
+ 	GroupMemoryBarrierWithGroupSync();
+ 
+-	const float cdist = gClothData.mSelfCollisionDistance;
+-	const float cdistSq = cdist * cdist;
+-
+ 	for (i = threadIdx; i < numIndices; i += blockDim)
+ #else
+-	for (i = threadIdx; i < numParticles; i += blockDim)
++	for (int32_t i = threadIdx; i < numParticles; i += blockDim)
+ #endif
+ 	{
+ #if USE_SELF_COLLISION_SORT
+
+From 2ce8972718bde231b05f41f751db2d595acf6a1b Mon Sep 17 00:00:00 2001
+From: Kevin Gliewe <kevingliewe@outlook.de>
+Date: Thu, 20 Feb 2020 19:46:02 +0100
+Subject: [PATCH 2/2] Fix DX accelerateParticles
+ https://github.com/NVIDIAGameWorks/NvCloth/issues/47
+
+---
+ NvCloth/src/dx/DxSolverKernel.hlsl | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/NvCloth/src/dx/DxSolverKernel.hlsl b/NvCloth/src/dx/DxSolverKernel.hlsl
+index 24d60b6..52e74be 100644
+--- a/NvCloth/src/dx/DxSolverKernel.hlsl
++++ b/NvCloth/src/dx/DxSolverKernel.hlsl
+@@ -174,18 +174,18 @@ void accelerateParticles(IParticles curParticles, uint32_t threadIdx)
+ 	// might be better to move this into integrate particles
+ 	uint32_t accelerationsOffset = gFrameData.mParticleAccelerationsOffset;
+ 
+-	GroupMemoryBarrierWithGroupSync(); // looping with 4 instead of 1 thread per particle
++	GroupMemoryBarrierWithGroupSync();
++
++	float sqrIterDt = gFrameData.mIterDt * gFrameData.mIterDt;
+ 
+-	float sqrIterDt = ~threadIdx & 0x3 ? gFrameData.mIterDt * gFrameData.mIterDt : 0.0f;
+-	for (uint32_t i = threadIdx; i < gClothData.mNumParticles * 4; i += blockDim)
++	for (uint32_t i = threadIdx; i < gClothData.mNumParticles; i += blockDim)
+ 	{
+ 		float4 acceleration = bParticleAccelerations[accelerationsOffset + i];
+-
+-		float4 curPos = curParticles.get(i / 4);
++		float4 curPos = curParticles.get(i);
+ 		if (curPos.w > 0.0f)
+ 		{
+-			curPos += acceleration * sqrIterDt;
+-			curParticles.set(i / 4, curPos);
++			curPos.xyz += acceleration.xyz * sqrIterDt;
++			curParticles.set(i, curPos);
+ 		}
+ 	}
+ 

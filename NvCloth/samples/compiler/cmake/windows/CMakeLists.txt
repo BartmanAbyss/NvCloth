@@ -1,9 +1,9 @@
 #Platform specific compile flags and project includes
 
 MESSAGE("Windows/CMakeLists.txt [begin]")
-SET(GW_DEPS_ROOT $ENV{GW_DEPS_ROOT})
+SET(GW_DEPS_ROOT c:/code/nvcloth/)
 
-SET(CMAKE_MODULE_PATH $ENV{GW_DEPS_ROOT}NvCloth/Externals/CMakeModules)
+SET(CMAKE_MODULE_PATH ${GW_DEPS_ROOT}NvCloth/Externals/CMakeModules)
 
 # Add find modules to the path
 IF(NOT EXISTS ${CMAKE_MODULE_PATH})
@@ -16,10 +16,10 @@ IF(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/CMakeModules")
 	MESSAGE(FATAL_ERROR "Could not find CMakeModules at ${CMAKE_CURRENT_SOURCE_DIR}/external/CMakeModules")
 ENDIF()
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}; "$ENV{GW_DEPS_ROOT}/NvCloth")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}; "${GW_DEPS_ROOT}/NvCloth")
 
-IF(NOT EXISTS "$ENV{GW_DEPS_ROOT}/NvCloth")
-	MESSAGE(FATAL_ERROR "Could not find CMakeModules for FindNvCloth.cmake at $ENV{GW_DEPS_ROOT}/NvCloth")
+IF(NOT EXISTS "${GW_DEPS_ROOT}/NvCloth")
+	MESSAGE(FATAL_ERROR "Could not find CMakeModules for FindNvCloth.cmake at ${GW_DEPS_ROOT}/NvCloth")
 ENDIF()
 
 MESSAGE( "[samples]windows/CMakeLists.txt CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")

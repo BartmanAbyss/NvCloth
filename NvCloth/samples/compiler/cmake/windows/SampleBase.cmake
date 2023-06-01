@@ -33,7 +33,7 @@ if (CMAKE_CL_64)
 	SET(HBAO_LIB ${NVCLOTH_ROOT_DIR}/samples/external/hbao/GFSDK_SSAO_D3D11.win64.lib)
 	SET(HBAO_DLLS ${NVCLOTH_ROOT_DIR}/samples/external/hbao/GFSDK_SSAO_D3D11.win64.dll)
 
-	SET(D3DCOMPILER_DLL "\"$(VC_ExecutablePath_x64_x64)/d3dcompiler_47.dll\"")
+	SET(D3DCOMPILER_DLL "\"c:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.36.32532/bin/Hostx64/x64/d3dcompiler_47.dll\"")
 	
 #	SET(ASSIMP_DLLS ${ASSIMP_DLL_PATH}/Release/assimp-vc140-mt.dll)
 else()
@@ -43,7 +43,7 @@ else()
 	SET(HBAO_LIB ${NVCLOTH_ROOT_DIR}/samples/external/hbao/GFSDK_SSAO_D3D11.win32.lib)
 	SET(HBAO_DLLS ${NVCLOTH_ROOT_DIR}/samples/external/hbao/GFSDK_SSAO_D3D11.win32.dll)
 
-	SET(D3DCOMPILER_DLL "\"$(VC_ExecutablePath_x86_x86)/d3dcompiler_47.dll\"")
+	SET(D3DCOMPILER_DLL "\"c:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.36.32532/bin/Hostx64/x64/d3dcompiler_47.dll\"")
 	
 #	SET(ASSIMP_DLLS ${ASSIMP_DLL_PATH}/Release/assimp-vc140-mt.dll)
 endif()
