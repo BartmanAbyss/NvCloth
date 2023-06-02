@@ -140,6 +140,9 @@ SET( NV_CLOTH_SOURCE_LIST
 	${PROJECT_ROOT_DIR}/src/ps/PsSortInternals.h
 	${PROJECT_ROOT_DIR}/src/ps/PsUtilities.h
 	${PROJECT_ROOT_DIR}/src/ps/PxIntrinsics.h
+
+	${PROJECT_ROOT_DIR}/src/foundation/FdAssert.cpp
+	${PROJECT_ROOT_DIR}/src/foundation/windows/FdWindowsPrintString.cpp
 	
 	${PROJECT_ROOT_DIR}/extensions/include/NvClothExt/ClothFabricCooker.h
 	${PROJECT_ROOT_DIR}/extensions/include/NvClothExt/ClothMeshDesc.h

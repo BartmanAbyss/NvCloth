@@ -1,4 +1,3 @@
-//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
@@ -11,7 +10,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -23,24 +22,42 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2020 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2022 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PXFOUNDATION_PXASSERT_H
-#define PXFOUNDATION_PXASSERT_H
+#ifndef PX_WINDOWS_FPU_H
+#define PX_WINDOWS_FPU_H
 
-/** \addtogroup foundation
-@{ */
+PX_INLINE physx::PxSIMDGuard::PxSIMDGuard(bool enable) : mEnabled(enable)
+{
+#if !PX_ARM && !PX_A64
+	if (enable)
+	{
+		mControlWord = _mm_getcsr();
+		// set default (disable exceptions: _MM_MASK_MASK) and FTZ (_MM_FLUSH_ZERO_ON), DAZ (_MM_DENORMALS_ZERO_ON: (1<<6))
+		_mm_setcsr(_MM_MASK_MASK | _MM_FLUSH_ZERO_ON | (1 << 6));
+	}
+	else
+	{
+		PX_ASSERT(_mm_getcsr() & _MM_FLUSH_ZERO_ON);
+		PX_ASSERT(_mm_getcsr() & (1 << 6));
+		PX_ASSERT(_mm_getcsr() & _MM_MASK_MASK);
+	}
+#endif
+}
 
-#include "foundation/Px.h"
+PX_INLINE physx::PxSIMDGuard::~PxSIMDGuard()
+{
+#if !PX_ARM && !PX_A64
+	if (mEnabled)
+	{
+		// restore control word and clear any exception flags
+		// (setting exception state flags cause exceptions on the first following fp operation)
+		_mm_setcsr(mControlWord & ~_MM_EXCEPT_MASK);
+	}
+#endif
+}
 
-#if !PX_ENABLE_ASSERTS
-	#define PX_SHARED_ASSERT(exp) ((void)0)
-#else
-	#include <assert.h>
-	#define PX_SHARED_ASSERT(exp) assert(exp);
-#endif // !PX_ENABLE_ASSERTS
+#endif
 
-/** @} */
-#endif // #ifndef PXFOUNDATION_PXASSERT_H
